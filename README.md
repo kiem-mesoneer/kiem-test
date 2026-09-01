@@ -7,7 +7,9 @@ architectures for common workload patterns, architectural quality metrics/KPIs, 
 design principles.
 
 See [DELIVERABLES.md](DELIVERABLES.md) for the full traceability from each of the 19 Jira stories
-to what was built.
+to what was built, and [architecture-landscape.md](architecture-landscape.md) for a single diagram
+showing how all 6 reference architectures, the ADR/governance pipeline, and the quality-metrics
+loop connect as one system landscape.
 
 ## Structure
 
