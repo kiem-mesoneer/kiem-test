@@ -1,0 +1,57 @@
+# Confluence page tree for the architecture conventions.
+#
+# Each top-level entry becomes a section page under CONFLUENCE_ROOT_PAGE_ID;
+# each child becomes a page under that section. A child is only published when
+# its markdown file's frontmatter has `status: active` (drafts are skipped).
+#
+# Section `id` is optional: on first publish the script creates the section and
+# prints the new id to paste back here, locking the section's identity. Child
+# pages get their `confluence_page_id` written back into their own frontmatter.
+#
+# Appended in brackets to every published page title — e.g. "ADR Governance
+# Model (Architecture-conventions)". Keeps titles unique within space DEV,
+# which is shared with other convention trees.
+suffix: Architecture-conventions
+
+# Structure mirrors the Foundations - Architecture Conventions project scope
+# (DS-269): ADR process/governance, arc42/C4 project documentation template,
+# architecture support requests, reference architectures for the committed
+# (Tier 1) workload patterns, architectural quality metrics/KPIs, and
+# crosscutting design principles applied across the reference architectures.
+#
+# NOTE: ADRs themselves (adr/000N-*.md) are NOT registered here — they sync to
+# Confluence via a separate fan-out path (see scripts/package_claude_plugin.py
+# for the Git -> Claude plugin leg; the Git -> Confluence leg for individual
+# ADRs is a follow-up, not built in this pass — only the two ADR *process*
+# pages below are part of the generic page-tree publish).
+pages:
+  - title: ADR Process & Governance
+    children:
+      - { title: "ADR Template & Lifecycle", file: adr/adr-template-lifecycle.md }
+      - { title: "ADR Governance Model", file: adr/adr-governance-model.md }
+
+  - title: Project Documentation Template (arc42/C4)
+    children:
+      - { title: "arc42/C4 Template", file: documentation-template/arc42-c4-template.md }
+      - { title: "arc42/C4 Adoption Guide", file: documentation-template/adoption-guide.md }
+
+  - title: Architecture Support
+    children:
+      - { title: "Architecture Support Request Process", file: architecture-support/support-request-process.md }
+
+  - title: Reference Architectures
+    children:
+      - { title: "Event-Driven / Message-Based Architecture", file: reference-architectures/event-driven.md }
+      - { title: "Standard Stack: Angular SPA + Spring Boot + Postgres", file: reference-architectures/standard-stack.md }
+      - { title: "Multi-Tenant Data Isolation", file: reference-architectures/multi-tenant-data-isolation.md }
+      - { title: "Serverless Workloads", file: reference-architectures/serverless-workloads.md }
+      - { title: "Frontend SPA with BFF", file: reference-architectures/frontend-spa-bff.md }
+      - { title: "Workflow Automation", file: reference-architectures/workflow-automation.md }
+
+  - title: Architectural Quality Metrics & KPIs
+    children:
+      - { title: "Metrics Catalogue", file: quality-metrics/metrics-catalogue.md }
+
+  - title: Crosscutting Design Principles
+    children:
+      - { title: "Data-Plane / Control-Plane Separation", file: crosscutting/data-control-plane-separation.md }

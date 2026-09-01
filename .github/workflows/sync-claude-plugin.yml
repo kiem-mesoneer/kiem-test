@@ -1,0 +1,53 @@
+name: Sync ADRs to Claude plugin
+
+# DS-273, Path 2 (Git -> Claude plugin). Independent of publish.yml (Path 1,
+# Git -> Confluence): either path can fail without blocking the other.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "adr/**"
+      - "scripts/package_claude_plugin.py"
+  schedule:
+    # Drift check only — re-runs the packaging step daily so a silent failure
+    # (e.g. a bad ADR file) can't quietly drift the plugin >24h behind main.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Package ADRs into the adr-lookup skill
+        run: python scripts/package_claude_plugin.py
+
+      - name: Record successful sync timestamp
+        run: date -u +"%Y-%m-%dT%H:%M:%S+00:00" > claude-plugin/skills/adr-lookup/.last-synced
+
+      - name: Check sync drift
+        run: python scripts/check_sync_drift.py
+
+      - name: Commit updated plugin skill
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add claude-plugin/skills/adr-lookup
+          git diff --cached --quiet || git commit -m "chore: sync adr-lookup plugin skill [skip ci]"
+          git push
+
+      - name: Alert on drift or failure
+        if: failure()
+        run: |
+          echo "::error::ADR -> Claude plugin sync failed or drifted >24h. Wire SLACK_WEBHOOK_URL secret to page #arch-alerts."
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"ADR sync drift/failure in architecture-convention"}' \
+          #   "${{ secrets.SLACK_WEBHOOK_URL }}"
